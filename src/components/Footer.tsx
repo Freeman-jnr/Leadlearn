@@ -1,4 +1,5 @@
-import { GraduationCap, Facebook, Twitter, Instagram, Linkedin, Youtube } from "lucide-react";
+import { Facebook, Twitter, Instagram, Linkedin, Youtube } from "lucide-react";
+import logo from "@/assets/lead-learnhub-logo.png";
 
 const cols = [
   { title: "Learn", links: ["Courses", "Live Classes", "Tutors", "Certifications"] },
