@@ -50,10 +50,10 @@ export function Navbar() {
         </nav>
 
         <div className="hidden lg:flex items-center gap-3">
-          <a href="#" className="text-sm font-semibold text-foreground/80 hover:text-foreground">
+          <Link to="/login" className="text-sm font-semibold text-foreground/80 hover:text-foreground">
             Log in
-          </a>
-          <a href="#" className="btn-primary !py-2.5 !px-5">Get Started</a>
+          </Link>
+          <Link to="/register" className="btn-primary !py-2.5 !px-5">Get Started</Link>
         </div>
 
         <button
