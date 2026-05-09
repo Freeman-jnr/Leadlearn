@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { Menu, X, GraduationCap } from "lucide-react";
+import { Menu, X } from "lucide-react";
+import logo from "@/assets/lead-learnhub-logo.png";
 
 const links = [
   ["Home", "#home"],
@@ -35,15 +36,7 @@ export function Navbar() {
         style={scrolled ? {} : { background: "transparent" }}
       >
         <a href="#home" className="flex items-center gap-2.5 group">
-          <span
-            className="grid h-9 w-9 place-items-center rounded-xl text-white"
-            style={{ background: "var(--gradient-brand)" }}
-          >
-            <GraduationCap className="h-5 w-5" />
-          </span>
-          <span className="font-display text-lg font-bold tracking-tight">
-            LEAD <span className="text-gradient-brand">LearnHub</span>
-          </span>
+          <img src={logo} alt="LEAD LearnHub" className="h-10 md:h-12 w-auto" />
         </a>
 
         <nav className="hidden lg:flex items-center gap-7">

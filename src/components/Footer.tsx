@@ -1,4 +1,5 @@
-import { GraduationCap, Facebook, Twitter, Instagram, Linkedin, Youtube } from "lucide-react";
+import { Facebook, Twitter, Instagram, Linkedin, Youtube } from "lucide-react";
+import logo from "@/assets/lead-learnhub-logo.png";
 
 const cols = [
   { title: "Learn", links: ["Courses", "Live Classes", "Tutors", "Certifications"] },
@@ -15,16 +16,8 @@ export function Footer() {
     >
       <div className="container-x grid gap-12 lg:grid-cols-12">
         <div className="lg:col-span-4 space-y-5">
-          <div className="flex items-center gap-2.5">
-            <span
-              className="grid h-10 w-10 place-items-center rounded-xl"
-              style={{ background: "var(--gradient-brand)" }}
-            >
-              <GraduationCap className="h-5 w-5" />
-            </span>
-            <span className="font-display text-xl font-bold">
-              LEAD <span className="text-gradient-brand">LearnHub</span>
-            </span>
+          <div className="bg-white rounded-2xl p-3 inline-block">
+            <img src={logo} alt="LEAD LearnHub" className="h-14 w-auto" />
           </div>
           <p className="text-sm text-white/65 max-w-sm">
             Leveraging on Education and Advocacy for Sustainable Development Goals.
