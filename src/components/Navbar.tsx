@@ -30,10 +30,7 @@ export function Navbar() {
       }`}
     >
       <div
-        className={`container-x flex items-center justify-between rounded-full px-4 md:px-6 py-3 transition-all ${
-          scrolled ? "glass-light shadow-[var(--shadow-soft)]" : ""
-        }`}
-        style={scrolled ? {} : { background: "transparent" }}
+        className="container-x flex items-center justify-between rounded-full px-4 md:px-6 py-2.5 bg-white border border-border shadow-[var(--shadow-soft)] transition-all"
       >
         <a href="#home" className="flex items-center gap-2.5 group">
           <img src={logo} alt="LEAD LearnHub" className="h-10 md:h-12 w-auto" />
