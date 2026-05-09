@@ -80,8 +80,8 @@ export function Navbar() {
                 </a>
               ))}
               <div className="flex gap-3 pt-3">
-                <a href="#" className="btn-outline flex-1">Log in</a>
-                <a href="#" className="btn-primary flex-1">Get Started</a>
+                <Link to="/login" className="btn-outline flex-1">Log in</Link>
+                <Link to="/register" className="btn-primary flex-1">Get Started</Link>
               </div>
             </nav>
           </div>
