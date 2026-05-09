@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { Menu, X, GraduationCap } from "lucide-react";
+import { Menu, X } from "lucide-react";
+import logo from "@/assets/lead-learnhub-logo.png";
 
 const links = [
   ["Home", "#home"],
