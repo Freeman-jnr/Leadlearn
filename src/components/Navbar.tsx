@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import logo from "@/assets/lead-learnhub-logo.png";
 
 const links = [
@@ -49,10 +50,10 @@ export function Navbar() {
         </nav>
 
         <div className="hidden lg:flex items-center gap-3">
-          <a href="#" className="text-sm font-semibold text-foreground/80 hover:text-foreground">
+          <Link to="/login" className="text-sm font-semibold text-foreground/80 hover:text-foreground">
             Log in
-          </a>
-          <a href="#" className="btn-primary !py-2.5 !px-5">Get Started</a>
+          </Link>
+          <Link to="/register" className="btn-primary !py-2.5 !px-5">Get Started</Link>
         </div>
 
         <button
@@ -79,8 +80,8 @@ export function Navbar() {
                 </a>
               ))}
               <div className="flex gap-3 pt-3">
-                <a href="#" className="btn-outline flex-1">Log in</a>
-                <a href="#" className="btn-primary flex-1">Get Started</a>
+                <Link to="/login" className="btn-outline flex-1">Log in</Link>
+                <Link to="/register" className="btn-primary flex-1">Get Started</Link>
               </div>
             </nav>
           </div>
