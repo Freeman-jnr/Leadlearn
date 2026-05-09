@@ -179,6 +179,14 @@
     background-clip: text;
     color: transparent;
   }
+  .text-gradient-rainbow {
+    background: var(--gradient-rainbow);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .bg-rainbow { background: var(--gradient-rainbow); }
+  .rainbow-divider { height: 4px; background: var(--gradient-rainbow); border-radius: 999px; }
   .btn-primary {
     @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold text-white transition-all;
     background: var(--gradient-brand);
