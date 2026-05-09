@@ -88,14 +88,23 @@
   --radius: 0.875rem;
 
   /* Brand */
-  --primary: oklch(0.38 0.18 268);              /* Deep Blue #1E3A8A */
+  --primary: oklch(0.45 0.21 264);              /* LEAD Blue */
   --primary-foreground: oklch(0.98 0 0);
-  --emerald: oklch(0.72 0.17 161);              /* #10B981 */
-  --emerald-foreground: oklch(0.15 0.04 160);
-  --orange: oklch(0.78 0.16 70);                /* #F59E0B */
+  --emerald: oklch(0.62 0.19 145);              /* LEAD Green */
+  --emerald-foreground: oklch(0.98 0 0);
+  --orange: oklch(0.72 0.19 50);                /* Warm orange */
   --orange-foreground: oklch(0.2 0.05 70);
-  --ink: oklch(0.18 0.04 264);                  /* #0F172A */
+  --ink: oklch(0.18 0.04 264);
   --ink-foreground: oklch(0.98 0 0);
+
+  /* Logo-derived rainbow */
+  --brand-red: oklch(0.62 0.24 27);
+  --brand-blue: oklch(0.45 0.21 264);
+  --brand-green: oklch(0.58 0.20 145);
+  --brand-yellow: oklch(0.88 0.17 92);
+  --brand-pink: oklch(0.78 0.13 8);
+  --brand-gold: oklch(0.75 0.14 78);
+  --brand-orange: oklch(0.72 0.19 50);
 
   --background: oklch(1 0 0);
   --foreground: oklch(0.18 0.04 264);
