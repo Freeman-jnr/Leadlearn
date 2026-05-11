@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as VerifyEmailRouteImport } from './routes/verify-email'
 import { Route as TutorDashboardRouteImport } from './routes/tutor-dashboard'
+import { Route as SchoolDashboardRouteImport } from './routes/school-dashboard'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as LoginRouteImport } from './routes/login'
@@ -27,6 +28,11 @@ const VerifyEmailRoute = VerifyEmailRouteImport.update({
 const TutorDashboardRoute = TutorDashboardRouteImport.update({
   id: '/tutor-dashboard',
   path: '/tutor-dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SchoolDashboardRoute = SchoolDashboardRouteImport.update({
+  id: '/school-dashboard',
+  path: '/school-dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
@@ -73,6 +79,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/school-dashboard': typeof SchoolDashboardRoute
   '/tutor-dashboard': typeof TutorDashboardRoute
   '/verify-email': typeof VerifyEmailRoute
 }
@@ -84,6 +91,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/school-dashboard': typeof SchoolDashboardRoute
   '/tutor-dashboard': typeof TutorDashboardRoute
   '/verify-email': typeof VerifyEmailRoute
 }
@@ -96,6 +104,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/school-dashboard': typeof SchoolDashboardRoute
   '/tutor-dashboard': typeof TutorDashboardRoute
   '/verify-email': typeof VerifyEmailRoute
 }
@@ -109,6 +118,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/register'
     | '/reset-password'
+    | '/school-dashboard'
     | '/tutor-dashboard'
     | '/verify-email'
   fileRoutesByTo: FileRoutesByTo
@@ -120,6 +130,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/register'
     | '/reset-password'
+    | '/school-dashboard'
     | '/tutor-dashboard'
     | '/verify-email'
   id:
@@ -131,6 +142,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/register'
     | '/reset-password'
+    | '/school-dashboard'
     | '/tutor-dashboard'
     | '/verify-email'
   fileRoutesById: FileRoutesById
@@ -143,6 +155,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   RegisterRoute: typeof RegisterRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  SchoolDashboardRoute: typeof SchoolDashboardRoute
   TutorDashboardRoute: typeof TutorDashboardRoute
   VerifyEmailRoute: typeof VerifyEmailRoute
 }
@@ -161,6 +174,13 @@ declare module '@tanstack/react-router' {
       path: '/tutor-dashboard'
       fullPath: '/tutor-dashboard'
       preLoaderRoute: typeof TutorDashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/school-dashboard': {
+      id: '/school-dashboard'
+      path: '/school-dashboard'
+      fullPath: '/school-dashboard'
+      preLoaderRoute: typeof SchoolDashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/reset-password': {
@@ -223,9 +243,20 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   RegisterRoute: RegisterRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  SchoolDashboardRoute: SchoolDashboardRoute,
   TutorDashboardRoute: TutorDashboardRoute,
   VerifyEmailRoute: VerifyEmailRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
