@@ -29,9 +29,71 @@ model User {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
+  // Relationships
+  studentProfile StudentProfile?
+  tutorProfile   TutorProfile?
+  schoolProfile  SchoolProfile?
+
   @@index([email])
   @@index([role])
   @@map("users")
+}
+
+// ============================================================================
+// PROFILE MODELS
+// ============================================================================
+
+/// Student profile model
+model StudentProfile {
+  id          String   @id @default(uuid())
+  userId      String   @unique
+  classLevel  String?
+  schoolName  String?
+  age         Int?
+  gender      String?
+  avatar      String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("student_profiles")
+}
+
+/// Tutor profile model
+model TutorProfile {
+  id              String   @id @default(uuid())
+  userId          String   @unique
+  bio             String?
+  subjects        String[]
+  experience      Int?
+  qualifications  String?
+  avatar          String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("tutor_profiles")
+}
+
+/// School profile model
+model SchoolProfile {
+  id           String   @id @default(uuid())
+  userId       String   @unique
+  schoolName   String
+  address      String?
+  schoolType   String?
+  logo         String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("school_profiles")
 }
 
 // ============================================================================
