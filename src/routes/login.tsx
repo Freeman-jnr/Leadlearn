@@ -1,8 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { motion } from "framer-motion";
-import { Mail, Lock, Eye, EyeOff, ArrowRight, BookOpen, Users, Award } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, ArrowRight, BookOpen, Users, Award, Loader2, AlertCircle } from "lucide-react";
 import { AuthLayout, FloatingField } from "@/components/AuthLayout";
+import { useAuth } from "@/hooks/useAuth";
+import type { LoginCredentials } from "@/types/auth.types";
 
 export const Route = createFileRoute("/login")({
   head: () => ({
@@ -18,6 +20,28 @@ export const Route = createFileRoute("/login")({
 
 function LoginPage() {
   const [show, setShow] = useState(false);
+  const emailRef = useRef<HTMLInputElement>(null);
+  const passwordRef = useRef<HTMLInputElement>(null);
+  const { login, isLoading, error, clearError } = useAuth();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    const email = emailRef.current?.value;
+    const password = passwordRef.current?.value;
+
+    if (!email || !password) {
+      return;
+    }
+
+    try {
+      clearError();
+      await login({ email, password } as LoginCredentials);
+    } catch (err) {
+      console.error("Login error:", err);
+    }
+  };
+
   return (
     <AuthLayout
       title="Welcome back to LEAD LearnHub"
@@ -54,18 +78,43 @@ function LoginPage() {
         </p>
       </div>
 
-      <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
-        <FloatingField id="email" label="Email address" type="email" icon={<Mail className="h-4 w-4" />} />
+      {error && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-4 p-3 rounded-xl bg-red-50 border border-red-200 flex items-start gap-3"
+        >
+          <AlertCircle className="h-5 w-5 text-red-600 shrink-0 mt-0.5" />
+          <div>
+            <p className="text-sm font-medium text-red-900">{error}</p>
+          </div>
+        </motion.div>
+      )}
+
+      <form className="space-y-4" onSubmit={handleSubmit}>
+        <FloatingField 
+          ref={emailRef}
+          id="email" 
+          label="Email address" 
+          type="email" 
+          icon={<Mail className="h-4 w-4" />}
+          disabled={isLoading}
+          required
+        />
         <FloatingField
+          ref={passwordRef}
           id="password"
           label="Password"
           type={show ? "text" : "password"}
           icon={<Lock className="h-4 w-4" />}
+          disabled={isLoading}
+          required
           trailing={
             <button
               type="button"
               onClick={() => setShow((v) => !v)}
-              className="h-8 w-8 grid place-items-center rounded-lg hover:bg-secondary text-muted-foreground"
+              className="h-8 w-8 grid place-items-center rounded-lg hover:bg-secondary text-muted-foreground disabled:opacity-50"
+              disabled={isLoading}
               aria-label="Toggle password"
             >
               {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -75,7 +124,11 @@ function LoginPage() {
 
         <div className="flex items-center justify-between text-sm">
           <label className="flex items-center gap-2 cursor-pointer select-none">
-            <input type="checkbox" className="h-4 w-4 rounded border-border accent-[var(--primary)]" />
+            <input 
+              type="checkbox" 
+              className="h-4 w-4 rounded border-border accent-[var(--primary)]"
+              disabled={isLoading}
+            />
             <span className="text-muted-foreground">Remember me</span>
           </label>
           <Link to="/forgot-password" className="font-medium text-primary hover:underline">
@@ -86,9 +139,19 @@ function LoginPage() {
         <motion.button
           whileTap={{ scale: 0.98 }}
           type="submit"
-          className="btn-primary w-full !py-3.5"
+          disabled={isLoading}
+          className="btn-primary w-full !py-3.5 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
-          Sign in <ArrowRight className="h-4 w-4" />
+          {isLoading ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin" />
+              Signing in...
+            </>
+          ) : (
+            <>
+              Sign in <ArrowRight className="h-4 w-4" />
+            </>
+          )}
         </motion.button>
 
         <div className="relative my-6">
@@ -97,19 +160,20 @@ function LoginPage() {
         </div>
 
         <div className="grid grid-cols-2 gap-3">
-          <SocialButton provider="Google" />
-          <SocialButton provider="Facebook" />
+          <SocialButton provider="Google" disabled={isLoading} />
+          <SocialButton provider="Facebook" disabled={isLoading} />
         </div>
       </form>
     </AuthLayout>
   );
 }
 
-function SocialButton({ provider }: { provider: "Google" | "Facebook" }) {
+function SocialButton({ provider, disabled }: { provider: "Google" | "Facebook"; disabled?: boolean }) {
   return (
     <button
       type="button"
-      className="flex items-center justify-center gap-2 rounded-2xl border border-border bg-white px-4 py-3 text-sm font-semibold hover:border-primary/40 hover:shadow-[var(--shadow-soft)] transition-all"
+      disabled={disabled}
+      className="flex items-center justify-center gap-2 rounded-2xl border border-border bg-white px-4 py-3 text-sm font-semibold hover:border-primary/40 hover:shadow-[var(--shadow-soft)] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
     >
       {provider === "Google" ? <GoogleIcon /> : <FacebookIcon />}
       {provider}
@@ -119,11 +183,12 @@ function SocialButton({ provider }: { provider: "Google" | "Facebook" }) {
 
 function GoogleIcon() {
   return (
-    <svg className="h-4 w-4" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3c-1.6 4.6-6 8-11.3 8-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.8 1.1 7.9 3l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 16 19 13 24 13c3 0 5.8 1.1 7.9 3l5.7-5.7C34 6.1 29.3 4 24 4c-7.5 0-14 4.1-17.7 10.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2c-2 1.4-4.5 2.4-7.2 2.4-5.3 0-9.7-3.4-11.3-8L6.3 33C9.9 39.9 16.4 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.1-4.1 5.6l6.2 5.2c-.4.4 6.6-4.8 6.6-14.8 0-1.3-.1-2.4-.4-3.5z"/></svg>
+    <svg className="h-4 w-4" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3c-1.6 4.6-6 8-11.3 8-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.8 1.1 7.9 3l5.7-5.7C34 6.1 29.3 4 24 4 12.95 4 4 12.95 4 24s8.95 20 20 20c11.05 0 20-8.95 20-20 0-1.3-.1-2.6-.4-3.5z" /></svg>
   );
 }
+
 function FacebookIcon() {
   return (
-    <svg className="h-4 w-4" viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12a12 12 0 10-13.9 11.9v-8.4H7v-3.5h3.1V9.4c0-3.1 1.8-4.8 4.6-4.8 1.3 0 2.7.2 2.7.2v3h-1.5c-1.5 0-2 .9-2 1.9v2.3h3.4l-.6 3.5h-2.9v8.4A12 12 0 0024 12z"/></svg>
+    <svg className="h-4 w-4" viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12a12 12 0 10-13.9 11.9v-8.4H7v-3.5h3.1V9.4c0-3.1 1.8-4.8 4.6-4.8 1.3 0 2.7.2 2.7.2v3h-1.5c-1.5 0-2 .9-2 1.9v2.3h3.4l-.5 3.5h-2.9v8.4A12 12 0 0024 12z" /></svg>
   );
 }

@@ -1,8 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { motion } from "framer-motion";
-import { User, Mail, Phone, Lock, Globe, GraduationCap, BookOpen, Building2, ArrowRight, Check } from "lucide-react";
+import { User, Mail, Phone, Lock, Globe, GraduationCap, BookOpen, Building2, ArrowRight, Check, Loader2, AlertCircle } from "lucide-react";
 import { AuthLayout, FloatingField } from "@/components/AuthLayout";
+import { useAuth } from "@/hooks/useAuth";
+import type { RegisterCredentials } from "@/types/auth.types";
 
 export const Route = createFileRoute("/register")({
   head: () => ({
@@ -23,7 +25,61 @@ const roles = [
 ];
 
 function RegisterPage() {
-  const [role, setRole] = useState("student");
+  const [role, setRole] = useState<"student" | "tutor" | "school">("student");
+  const firstNameRef = useRef<HTMLInputElement>(null);
+  const lastNameRef = useRef<HTMLInputElement>(null);
+  const emailRef = useRef<HTMLInputElement>(null);
+  const phoneRef = useRef<HTMLInputElement>(null);
+  const countryRef = useRef<HTMLInputElement>(null);
+  const passwordRef = useRef<HTMLInputElement>(null);
+  const confirmPasswordRef = useRef<HTMLInputElement>(null);
+  const termsRef = useRef<HTMLInputElement>(null);
+
+  const { register, isLoading, error, clearError } = useAuth();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const firstName = firstNameRef.current?.value;
+    const lastName = lastNameRef.current?.value;
+    const email = emailRef.current?.value;
+    const phone = phoneRef.current?.value;
+    const country = countryRef.current?.value;
+    const password = passwordRef.current?.value;
+    const confirmPassword = confirmPasswordRef.current?.value;
+    const terms = termsRef.current?.checked;
+
+    if (!firstName || !lastName || !email || !password || !confirmPassword) {
+      alert("Please fill in all required fields");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      alert("Passwords do not match");
+      return;
+    }
+
+    if (!terms) {
+      alert("Please agree to the terms and privacy policy");
+      return;
+    }
+
+    try {
+      clearError();
+      await register({
+        firstName,
+        lastName,
+        email,
+        password,
+        phone: phone || undefined,
+        country: country || undefined,
+        role,
+      } as RegisterCredentials);
+    } catch (err) {
+      console.error("Registration error:", err);
+    }
+  };
+
   return (
     <AuthLayout
       title="Create your learning account"
@@ -37,7 +93,19 @@ function RegisterPage() {
         </p>
       </div>
 
-      {/* Role cards */}
+      {error && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-4 p-3 rounded-xl bg-red-50 border border-red-200 flex items-start gap-3"
+        >
+          <AlertCircle className="h-5 w-5 text-red-600 shrink-0 mt-0.5" />
+          <div>
+            <p className="text-sm font-medium text-red-900">{error}</p>
+          </div>
+        </motion.div>
+      )}
+
       <div className="grid grid-cols-3 gap-2 mb-5">
         {roles.map((r) => {
           const active = role === r.id;
@@ -46,8 +114,9 @@ function RegisterPage() {
               key={r.id}
               whileHover={{ y: -3 }}
               whileTap={{ scale: 0.97 }}
-              onClick={() => setRole(r.id)}
-              className={`relative rounded-2xl border p-3 text-left transition-all ${active ? "border-transparent shadow-[var(--shadow-soft)]" : "border-border bg-white hover:border-primary/30"}`}
+              onClick={() => setRole(r.id as "student" | "tutor" | "school")}
+              disabled={isLoading}
+              className={`relative rounded-2xl border p-3 text-left transition-all disabled:opacity-50 disabled:cursor-not-allowed ${active ? "border-transparent shadow-[var(--shadow-soft)]" : "border-border bg-white hover:border-primary/30"}`}
               style={active ? { background: r.gradient, color: "white" } : undefined}
             >
               <r.Icon className="h-5 w-5" />
@@ -63,27 +132,101 @@ function RegisterPage() {
         })}
       </div>
 
-      <form className="space-y-3" onSubmit={(e) => e.preventDefault()}>
-        <FloatingField id="name" label="Full name" icon={<User className="h-4 w-4" />} />
-        <FloatingField id="email" label="Email address" type="email" icon={<Mail className="h-4 w-4" />} />
+      <form className="space-y-3" onSubmit={handleSubmit}>
+        <FloatingField 
+          ref={firstNameRef}
+          id="firstName" 
+          label="First name" 
+          icon={<User className="h-4 w-4" />}
+          disabled={isLoading}
+          required
+        />
+        <FloatingField 
+          ref={lastNameRef}
+          id="lastName" 
+          label="Last name" 
+          icon={<User className="h-4 w-4" />}
+          disabled={isLoading}
+          required
+        />
+        <FloatingField 
+          ref={emailRef}
+          id="email" 
+          label="Email address" 
+          type="email" 
+          icon={<Mail className="h-4 w-4" />}
+          disabled={isLoading}
+          required
+        />
         <div className="grid grid-cols-2 gap-3">
-          <FloatingField id="phone" label="Phone" icon={<Phone className="h-4 w-4" />} />
-          <FloatingField id="country" label="Country" icon={<Globe className="h-4 w-4" />} />
+          <FloatingField 
+            ref={phoneRef}
+            id="phone" 
+            label="Phone" 
+            icon={<Phone className="h-4 w-4" />}
+            disabled={isLoading}
+          />
+          <FloatingField 
+            ref={countryRef}
+            id="country" 
+            label="Country" 
+            icon={<Globe className="h-4 w-4" />}
+            disabled={isLoading}
+          />
         </div>
-        <FloatingField id="pwd" label="Password" type="password" icon={<Lock className="h-4 w-4" />} />
-        <FloatingField id="cpwd" label="Confirm password" type="password" icon={<Lock className="h-4 w-4" />} />
+        <FloatingField 
+          ref={passwordRef}
+          id="password" 
+          label="Password" 
+          type="password" 
+          icon={<Lock className="h-4 w-4" />}
+          disabled={isLoading}
+          required
+        />
+        <FloatingField 
+          ref={confirmPasswordRef}
+          id="confirmPassword" 
+          label="Confirm password" 
+          type="password" 
+          icon={<Lock className="h-4 w-4" />}
+          disabled={isLoading}
+          required
+        />
 
         <label className="flex items-start gap-2 text-xs text-muted-foreground pt-1">
-          <input type="checkbox" className="mt-0.5 h-4 w-4 rounded border-border accent-[var(--primary)]" />
+          <input 
+            ref={termsRef}
+            type="checkbox" 
+            className="mt-0.5 h-4 w-4 rounded border-border accent-[var(--primary)]"
+            disabled={isLoading}
+          />
           <span>I agree to the <a className="text-primary font-medium hover:underline" href="#">Terms</a> and <a className="text-primary font-medium hover:underline" href="#">Privacy Policy</a>.</span>
         </label>
 
-        <motion.button whileTap={{ scale: 0.98 }} className="btn-primary w-full !py-3.5 mt-2">
-          Create account <ArrowRight className="h-4 w-4" />
+        <motion.button 
+          whileTap={{ scale: 0.98 }} 
+          type="submit"
+          disabled={isLoading}
+          className="btn-primary w-full !py-3.5 mt-2 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+        >
+          {isLoading ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin" />
+              Creating account...
+            </>
+          ) : (
+            <>
+              Create account <ArrowRight className="h-4 w-4" />
+            </>
+          )}
         </motion.button>
 
-        <button type="button" className="w-full flex items-center justify-center gap-2 rounded-2xl border border-border bg-white px-4 py-3 text-sm font-semibold hover:border-primary/40 transition-all">
-          <svg className="h-4 w-4" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3c-1.6 4.6-6 8-11.3 8-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.8 1.1 7.9 3l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 16 19 13 24 13c3 0 5.8 1.1 7.9 3l5.7-5.7C34 6.1 29.3 4 24 4c-7.5 0-14 4.1-17.7 10.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2c-2 1.4-4.5 2.4-7.2 2.4-5.3 0-9.7-3.4-11.3-8L6.3 33C9.9 39.9 16.4 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.1-4.1 5.6l6.2 5.2c-.4.4 6.6-4.8 6.6-14.8 0-1.3-.1-2.4-.4-3.5z"/></svg>
+        <button 
+          type="button" 
+          disabled={isLoading}
+          className="w-full flex items-center justify-center gap-2 rounded-2xl border border-border bg-white px-4 py-3 text-sm font-semibold hover:border-primary/40 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <svg className="h-4 w-4" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3c-1.6 4.6-6 8-11.3 8-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.8 1.1 7.9 3l5.7-5.7C34 6.1 29.3 4 24 4 12.95 4 4 12.95 4 24s8.95 20 20 20c11.05 0 20-8.95 20-20 0-1.3-.1-2.6-.4-3.5z" /></svg>
           Continue with Google
         </button>
       </form>
