@@ -1,109 +1,97 @@
-// ============================================================================
-// PRISMA SCHEMA
-// ============================================================================
-// Database schema for LearnHub application
-// ============================================================================
+// datasource db {
+//   provider = "postgresql"
+//   url      = env("DATABASE_URL")
+// }
 
-generator client {
-  provider = "prisma-client-js"
-}
+// generator client {
+//   provider = "prisma-client-js"
+// }
 
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
+// model User {
+//   id            String    @id @default(cuid())
+//   email         String    @unique
+//   name          String?
+//   avatar        String?
+//   bio           String?
+//   createdAt     DateTime  @default(now())
+//   updatedAt     DateTime  @updatedAt
 
-// ============================================================================
-// AUTH & USER MODELS
-// ============================================================================
+//   courses       Enrollment[]
+//   progress      LessonProgress[]
+//   profile       UserProfile?
 
-/// User account model
-model User {
-  id            String   @id @default(uuid())
-  fullName      String
-  email         String   @unique
-  password      String
-  role          Role
-  isVerified    Boolean  @default(false)
-  refreshToken  String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+//   @@map("users")
+// }
 
-  // Relationships
-  studentProfile StudentProfile?
-  tutorProfile   TutorProfile?
-  schoolProfile  SchoolProfile?
+// model UserProfile {
+//   id            String    @id @default(cuid())
+//   userId        String    @unique
+//   user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+//   bio           String?
+//   avatarUrl     String?
+//   socialLinks   String?   // JSON stored as string
+//   preferences   String?   // JSON stored as string
+//   createdAt     DateTime  @default(now())
+//   updatedAt     DateTime  @updatedAt
 
-  @@index([email])
-  @@index([role])
-  @@map("users")
-}
+//   @@map("user_profiles")
+// }
 
-// ============================================================================
-// PROFILE MODELS
-// ============================================================================
+// model Course {
+//   id            String    @id @default(cuid())
+//   title         String
+//   description   String
+//   thumbnail     String?
+//   instructor    String?
+//   createdAt     DateTime  @default(now())
+//   updatedAt     DateTime  @updatedAt
 
-/// Student profile model
-model StudentProfile {
-  id          String   @id @default(uuid())
-  userId      String   @unique
-  classLevel  String?
-  schoolName  String?
-  age         Int?
-  gender      String?
-  avatar      String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+//   lessons       Lesson[]
+//   enrollments   Enrollment[]
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+//   @@map("courses")
+// }
 
-  @@index([userId])
-  @@map("student_profiles")
-}
+// model Lesson {
+//   id            String    @id @default(cuid())
+//   courseId      String
+//   course        Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
+//   title         String
+//   content       String
+//   videoUrl      String?
+//   order         Int       @default(0)
+//   createdAt     DateTime  @default(now())
+//   updatedAt     DateTime  @updatedAt
 
-/// Tutor profile model
-model TutorProfile {
-  id              String   @id @default(uuid())
-  userId          String   @unique
-  bio             String?
-  subjects        String[]
-  experience      Int?
-  qualifications  String?
-  avatar          String?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+//   progress      LessonProgress[]
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+//   @@map("lessons")
+// }
 
-  @@index([userId])
-  @@map("tutor_profiles")
-}
+// model Enrollment {
+//   id            String    @id @default(cuid())
+//   userId        String
+//   user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+//   courseId      String
+//   course        Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
+//   enrolledAt    DateTime  @default(now())
+//   completedAt   DateTime?
 
-/// School profile model
-model SchoolProfile {
-  id           String   @id @default(uuid())
-  userId       String   @unique
-  schoolName   String
-  address      String?
-  schoolType   String?
-  logo         String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+//   @@unique([userId, courseId])
+//   @@map("enrollments")
+// }
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+// model LessonProgress {
+//   id            String    @id @default(cuid())
+//   userId        String
+//   user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+//   lessonId      String
+//   lesson        Lesson    @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+//   completedAt   DateTime?
+//   progress      Int       @default(0) // 0-100 percentage
+//   createdAt     DateTime  @default(now())
+//   updatedAt     DateTime  @updatedAt
 
-  @@index([userId])
-  @@map("school_profiles")
-}
-
-// ============================================================================
-// ENUMS
-// ============================================================================
-
-/// User roles for RBAC
-enum Role {
-  STUDENT
-  TUTOR
-  SCHOOL
-  ADMIN
-}
+//   @@unique([userId, lessonId])
+//   @@map("lesson_progress")
+// }
