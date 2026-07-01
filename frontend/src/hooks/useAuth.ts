@@ -20,10 +20,25 @@ export const useAuth = () => {
         store.setError(null);
 
         const response = await loginUser(credentials);
-        store.setAuth(response);
+        // Backend returns flat: { accessToken, refreshToken, user }
+        const { user, accessToken, refreshToken } = response as any;
+        store.setAuth({
+          user,
+          accessToken,
+          refreshToken,
+        });
 
-        // Redirect to dashboard
-        await navigate({ to: "/dashboard" });
+        // Redirect based on role
+        const role = user?.role?.toLowerCase();
+        if (role === "admin") {
+          await navigate({ to: "/admin-dashboard" });
+        } else if (role === "tutor") {
+          await navigate({ to: "/tutor-dashboard" });
+        } else if (role === "school") {
+          await navigate({ to: "/school-dashboard" });
+        } else {
+          await navigate({ to: "/dashboard" });
+        }
         return response;
       } catch (error: any) {
         const errorMessage = error.response?.data?.message || "Login failed. Please try again.";
@@ -43,9 +58,12 @@ export const useAuth = () => {
         store.setError(null);
 
         const response = await registerUser(credentials);
-        store.setAuth(response);
-
-        // Redirect to account success page
+        // Backend returns flat: { accessToken, refreshToken, user }
+        // Auto-login after register
+        const { user, accessToken, refreshToken } = response as any;
+        if (user && accessToken) {
+          store.setAuth({ user, accessToken, refreshToken });
+        }
         await navigate({ to: "/account-success" });
         return response;
       } catch (error: any) {

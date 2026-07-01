@@ -115,7 +115,8 @@ export interface LoginCredentials {
 
 // Register credentials
 export interface RegisterCredentials {
-  fullName: string;
+  firstName: string;
+  lastName: string;
   email: string;
   password: string;
   confirmPassword: string;
@@ -132,7 +133,8 @@ export interface TokenPair {
 // User profile response
 export interface UserProfile {
   id: string;
-  fullName: string;
+  firstName: string;
+  lastName: string;
   email: string;
   role: Role;
   isVerified: boolean;

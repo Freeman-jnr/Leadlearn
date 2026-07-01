@@ -16,7 +16,8 @@ export async function register(req: Request, res: Response): Promise<void> {
   const body = registerSchema.parse(req.body);
 
   const user = await authService.registerUser(
-    body.fullName,
+    body.firstName,
+    body.lastName,
     body.email,
     body.password,
     body.role,

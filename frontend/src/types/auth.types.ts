@@ -10,7 +10,8 @@ export interface User {
   lastName: string;
   phone?: string;
   avatarUrl?: string;
-  role: "student" | "tutor" | "school";
+  role: "STUDENT" | "TUTOR" | "SCHOOL" | "ADMIN";
+  isVerified: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -31,9 +32,8 @@ export interface RegisterCredentials {
   lastName: string;
   email: string;
   password: string;
-  phone?: string;
-  country?: string;
-  role: "student" | "tutor" | "school";
+  confirmPassword: string;
+  role: "STUDENT" | "TUTOR" | "SCHOOL";
 }
 
 export interface RefreshTokenRequest {

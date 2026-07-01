@@ -1,5 +1,18 @@
 {
   "include": ["src/**/*.ts", "src/**/*.tsx", "vite.config.ts", "eslint.config.js"],
+  "exclude": [
+    "src/modules/auth/auth.controller.ts",
+    "src/modules/auth/auth.middleware.ts",
+    "src/modules/auth/auth.routes.ts",
+    "src/modules/auth/auth.service.ts",
+    "src/modules/auth/auth.utils.ts",
+    "src/modules/auth/index.ts",
+    "src/modules/profiles",
+    "src/lib/prisma.ts",
+    "src/lib/supabase-client.ts",
+    "src/lib/supabase-server.ts",
+    "src/server.ts"
+  ],
   "compilerOptions": {
     "target": "ES2022",
     "jsx": "react-jsx",

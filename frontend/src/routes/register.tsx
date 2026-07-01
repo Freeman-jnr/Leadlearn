@@ -19,13 +19,13 @@ export const Route = createFileRoute("/register")({
 });
 
 const roles = [
-  { id: "student", title: "Student", desc: "Learn from world-class courses & tutors.", Icon: GraduationCap, gradient: "var(--gradient-brand)" },
-  { id: "tutor", title: "Tutor", desc: "Teach, host live classes & earn.", Icon: BookOpen, gradient: "var(--gradient-warm)" },
-  { id: "school", title: "Institution", desc: "Manage cohorts and curricula.", Icon: Building2, gradient: "var(--gradient-vibrant)" },
+  { id: "STUDENT", title: "Student", desc: "Learn from world-class courses & tutors.", Icon: GraduationCap, gradient: "var(--gradient-brand)" },
+  { id: "TUTOR", title: "Tutor", desc: "Teach, host live classes & earn.", Icon: BookOpen, gradient: "var(--gradient-warm)" },
+  { id: "SCHOOL", title: "Institution", desc: "Manage cohorts and curricula.", Icon: Building2, gradient: "var(--gradient-vibrant)" },
 ];
 
 function RegisterPage() {
-  const [role, setRole] = useState<"student" | "tutor" | "school">("student");
+  const [role, setRole] = useState<"STUDENT" | "TUTOR" | "SCHOOL">("STUDENT");
   const firstNameRef = useRef<HTMLInputElement>(null);
   const lastNameRef = useRef<HTMLInputElement>(null);
   const emailRef = useRef<HTMLInputElement>(null);
@@ -71,8 +71,7 @@ function RegisterPage() {
         lastName,
         email,
         password,
-        phone: phone || undefined,
-        country: country || undefined,
+        confirmPassword,
         role,
       } as RegisterCredentials);
     } catch (err) {
@@ -114,7 +113,7 @@ function RegisterPage() {
               key={r.id}
               whileHover={{ y: -3 }}
               whileTap={{ scale: 0.97 }}
-              onClick={() => setRole(r.id as "student" | "tutor" | "school")}
+              onClick={() => setRole(r.id as "STUDENT" | "TUTOR" | "SCHOOL")}
               disabled={isLoading}
               className={`relative rounded-2xl border p-3 text-left transition-all disabled:opacity-50 disabled:cursor-not-allowed ${active ? "border-transparent shadow-[var(--shadow-soft)]" : "border-border bg-white hover:border-primary/30"}`}
               style={active ? { background: r.gradient, color: "white" } : undefined}

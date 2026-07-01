@@ -9,7 +9,8 @@ import { Role } from './auth.types';
 
 // Register schema
 export const registerSchema = z.object({
-  fullName: z.string().min(2, 'Full name must be at least 2 characters').max(100),
+  firstName: z.string().min(1, 'First name is required').max(50),
+  lastName: z.string().min(1, 'Last name is required').max(50),
   email: z.string().email('Invalid email format'),
   password: z
     .string()

@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Link } from "@tanstack/react-router";
 import logo from "@/assets/lead-learnhub-logo.png";
+import { forwardRef } from "react";
 import type { ReactNode } from "react";
 
 interface AuthLayoutProps {
@@ -118,29 +119,36 @@ interface FieldProps {
   icon?: ReactNode;
   trailing?: ReactNode;
   id: string;
+  disabled?: boolean;
+  required?: boolean;
 }
 
-export function FloatingField({ label, type = "text", placeholder, icon, trailing, id }: FieldProps) {
-  return (
-    <div className="relative group">
-      {icon && (
-        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground">{icon}</div>
-      )}
-      <input
-        id={id}
-        type={type}
-        placeholder={placeholder ?? " "}
-        className={`peer w-full rounded-2xl border border-border bg-white/70 backdrop-blur px-4 ${icon ? "pl-11" : ""} ${trailing ? "pr-12" : ""} pt-5 pb-2 text-sm text-foreground placeholder:text-transparent focus:placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/15 transition-all`}
-      />
-      <label
-        htmlFor={id}
-        className={`pointer-events-none absolute ${icon ? "left-11" : "left-4"} top-1.5 text-[11px] uppercase tracking-wide text-muted-foreground transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:text-sm peer-placeholder-shown:normal-case peer-focus:top-1.5 peer-focus:translate-y-0 peer-focus:text-[11px] peer-focus:uppercase peer-focus:text-primary`}
-      >
-        {label}
-      </label>
-      {trailing && (
-        <div className="absolute right-3 top-1/2 -translate-y-1/2">{trailing}</div>
-      )}
-    </div>
-  );
-}
+export const FloatingField = forwardRef<HTMLInputElement, FieldProps>(
+  function FloatingField({ label, type = "text", placeholder, icon, trailing, id, disabled, required }, ref) {
+    return (
+      <div className="relative group">
+        {icon && (
+          <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground">{icon}</div>
+        )}
+        <input
+          ref={ref}
+          id={id}
+          type={type}
+          placeholder={placeholder ?? " "}
+          disabled={disabled}
+          required={required}
+          className={`peer w-full rounded-2xl border border-border bg-white/70 backdrop-blur px-4 ${icon ? "pl-11" : ""} ${trailing ? "pr-12" : ""} pt-5 pb-2 text-sm text-foreground placeholder:text-transparent focus:placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/15 transition-all disabled:opacity-50 disabled:cursor-not-allowed`}
+        />
+        <label
+          htmlFor={id}
+          className={`pointer-events-none absolute ${icon ? "left-11" : "left-4"} top-1.5 text-[11px] uppercase tracking-wide text-muted-foreground transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:text-sm peer-placeholder-shown:normal-case peer-focus:top-1.5 peer-focus:translate-y-0 peer-focus:text-[11px] peer-focus:uppercase peer-focus:text-primary`}
+        >
+          {label}
+        </label>
+        {trailing && (
+          <div className="absolute right-3 top-1/2 -translate-y-1/2">{trailing}</div>
+        )}
+      </div>
+    );
+  }
+);

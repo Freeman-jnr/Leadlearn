@@ -19,7 +19,8 @@ import { AuthException, AuthErrorCode, HTTPStatus, Role, TokenPair, UserProfile 
  * Register new user
  */
 export async function registerUser(
-  fullName: string,
+  firstName: string,
+  lastName: string,
   email: string,
   password: string,
   role: Role,
@@ -58,10 +59,10 @@ export async function registerUser(
   // Hash password
   const hashedPassword = hashPassword(password);
 
-  // Create user
+  // Create user — combine firstName + lastName into fullName for the DB
   const user = await prisma.user.create({
     data: {
-      fullName,
+      fullName: `${firstName} ${lastName}`.trim(),
       email,
       password: hashedPassword,
       role,
@@ -258,9 +259,12 @@ export async function changePassword(
  * Format user profile response
  */
 function formatUserProfile(user: any): UserProfile {
+  const [firstName, ...rest] = (user.fullName as string).split(' ');
+  const lastName = rest.join(' ');
   return {
     id: user.id,
-    fullName: user.fullName,
+    firstName,
+    lastName,
     email: user.email,
     role: user.role,
     isVerified: user.isVerified,
