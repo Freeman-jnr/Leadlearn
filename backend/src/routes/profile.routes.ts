@@ -43,7 +43,19 @@ router.patch('/student', requireAuth, requireRole(['STUDENT']), async (req: Auth
 router.patch('/tutor', requireAuth, requireRole(['TUTOR']), async (req: AuthenticatedRequest, res: Response) => {
   try {
     const userId = req.user.id;
-    const { subjects, qualifications, bio, experience, avatar } = req.body;
+    const { subjects, qualifications, bio, experience, avatar, firstName, lastName, phone } = req.body;
+
+    // Update base user if fields are provided
+    if (firstName || lastName || phone) {
+      await prisma.user.update({
+        where: { id: userId },
+        data: {
+          ...(firstName && { firstName }),
+          ...(lastName && { lastName }),
+          ...(phone && { phone }),
+        }
+      });
+    }
 
     await prisma.tutorProfile.upsert({
       where: { userId },

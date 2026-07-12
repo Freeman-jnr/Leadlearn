@@ -2,6 +2,7 @@
  * Protected Route Component
  * Wraps routes that require authentication
  * Redirects unauthenticated users to login page
+ * Redirects authenticated-but-unverified users to verify-email page
  */
 
 import { ReactNode } from "react";
@@ -15,18 +16,22 @@ interface ProtectedRouteProps {
 
 export function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) {
   const navigate = useNavigate();
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, isVerified, user } = useAuth();
 
   // Check authentication
   if (!isAuthenticated || !user) {
-    // Redirect to login if not authenticated
     navigate({ to: "/login" });
+    return null;
+  }
+
+  // Enforce email verification before any protected content
+  if (!isVerified) {
+    navigate({ to: "/verify-email" });
     return null;
   }
 
   // Check role if specified
   if (requiredRole && user.role.toLowerCase() !== requiredRole) {
-    // Redirect to dashboard if wrong role
     navigate({ to: "/dashboard" });
     return null;
   }

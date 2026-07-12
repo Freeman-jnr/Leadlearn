@@ -6,9 +6,10 @@ import {
   Users, ShoppingBag, Package, Bell, Trophy, Settings, LogOut,
   Search, Calendar, ChevronLeft, ChevronRight, Play, Clock, Star,
   Flame, Award, TrendingUp, ShoppingCart, Heart, Plus, MessageCircle,
-  CheckCircle2, AlertCircle, Sparkles, Zap, Target, Crown,
+  CheckCircle2, AlertCircle, Sparkles, Zap, Target, Crown, Loader2
 } from "lucide-react";
 import logo from "@/assets/lead-learnhub-logo.png";
+import { useStudentDashboard } from "@/hooks/useDashboard";
 
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
@@ -94,6 +95,17 @@ const achievements = [
 function DashboardPage() {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { data: dashboardData, isLoading, error } = useStudentDashboard();
+
+  if (isLoading) {
+    return <div className="min-h-screen bg-[oklch(0.98_0.01_250)] flex items-center justify-center"><Loader2 className="h-10 w-10 animate-spin text-primary" /></div>;
+  }
+
+  if (error) {
+    return <div className="min-h-screen bg-[oklch(0.98_0.01_250)] flex items-center justify-center"><p className="text-red-500">Failed to load dashboard data.</p></div>;
+  }
+
+  const { state } = dashboardData || {};
 
   return (
     <div className="min-h-screen bg-[oklch(0.98_0.01_250)] flex">
@@ -105,20 +117,30 @@ function DashboardPage() {
         <TopBar onMenu={() => setMobileOpen(true)} />
 
         <main className="p-4 sm:p-6 lg:p-8 space-y-8 pb-32">
-          <HeroWelcome />
-          <ContinueLearning />
-          <div className="grid lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2"><LiveClasses /></div>
-            <NotificationsPanel />
-          </div>
-          <RecordedLessons />
-          <div className="grid lg:grid-cols-2 gap-6">
-            <Homework />
-            <PerformanceAnalytics />
-          </div>
-          <PersonalTutors />
-          <Marketplace />
-          <Achievements />
+          {state === 'empty' ? (
+            <div className="text-center py-20">
+              <h2 className="text-3xl font-bold mb-4">Welcome to LEAD LearnHub!</h2>
+              <p className="text-muted-foreground mb-8">You haven't enrolled in any courses yet. Let's get started.</p>
+              <Link to="/courses" className="btn-primary">Browse Courses</Link>
+            </div>
+          ) : (
+            <>
+              <HeroWelcome />
+              <ContinueLearning />
+              <div className="grid lg:grid-cols-3 gap-6">
+                <div className="lg:col-span-2"><LiveClasses /></div>
+                <NotificationsPanel />
+              </div>
+              <RecordedLessons />
+              <div className="grid lg:grid-cols-2 gap-6">
+                <Homework />
+                <PerformanceAnalytics />
+              </div>
+              <PersonalTutors />
+              <Marketplace />
+              <Achievements />
+            </>
+          )}
         </main>
       </div>
 
@@ -326,11 +348,14 @@ function SectionHeader({ title, subtitle, action = "See all" }: { title: string;
 }
 
 function ContinueLearning() {
+  const { data } = useStudentDashboard();
+  const currentCourses = data?.courses || [];
+
   return (
     <section>
       <SectionHeader title="Continue Learning" subtitle="Pick up where you left off" />
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-        {courses.map((c) => (
+        {currentCourses.map((c: any) => (
           <motion.div
             key={c.subject}
             whileHover={{ y: -6 }}
@@ -378,11 +403,14 @@ function ContinueLearning() {
 
 /* ---------------- Live Classes ---------------- */
 function LiveClasses() {
+  const { data } = useStudentDashboard();
+  const currentLiveClasses = data?.liveClasses || [];
+
   return (
     <section>
       <SectionHeader title="Live Classes" subtitle="Don't miss your scheduled sessions" />
       <div className="space-y-3">
-        {liveClasses.map((c) => (
+        {currentLiveClasses.map((c: any) => (
           <motion.div
             whileHover={{ x: 4 }}
             key={c.subject}
@@ -457,11 +485,14 @@ function NotificationsPanel() {
 
 /* ---------------- Recorded Lessons ---------------- */
 function RecordedLessons() {
+  const { data } = useStudentDashboard();
+  const currentRecorded = data?.recorded || [];
+
   return (
     <section>
       <SectionHeader title="Recorded Lessons" subtitle="Watch anytime, anywhere" />
       <div className="flex gap-4 overflow-x-auto pb-4 -mx-4 px-4 snap-x">
-        {recorded.map((r) => (
+        {currentRecorded.map((r: any) => (
           <motion.div
             key={r.title}
             whileHover={{ scale: 1.04, y: -4 }}
@@ -493,6 +524,8 @@ function RecordedLessons() {
 
 /* ---------------- Homework ---------------- */
 function Homework() {
+  const { data } = useStudentDashboard();
+  const currentHomework = data?.homework || [];
   const styles: Record<string, { bg: string; text: string; icon: any; label: string }> = {
     completed: { bg: "var(--brand-green)", text: "white", icon: CheckCircle2, label: "Completed" },
     pending: { bg: "var(--brand-orange)", text: "white", icon: Clock, label: "Pending" },
@@ -502,7 +535,7 @@ function Homework() {
     <section className="bg-white rounded-3xl p-6 border border-border shadow-[var(--shadow-soft)]">
       <SectionHeader title="Homework" subtitle="Stay on top of your assignments" />
       <div className="space-y-3">
-        {homework.map((h) => {
+        {currentHomework.map((h: any) => {
           const s = styles[h.status];
           return (
             <div key={h.title} className="flex items-center gap-3 p-3 rounded-xl border border-border hover:border-primary/30 transition-colors">
@@ -585,11 +618,14 @@ function RingStat({ label, value, color }: { label: string; value: number; color
 
 /* ---------------- Tutors ---------------- */
 function PersonalTutors() {
+  const { data } = useStudentDashboard();
+  const currentTutors = data?.tutors || [];
+
   return (
     <section>
       <SectionHeader title="Personal Tutors" subtitle="Get one-on-one help from top teachers" />
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {tutors.map((t) => (
+        {currentTutors.map((t: any) => (
           <motion.div
             key={t.name}
             whileHover={{ y: -4 }}
@@ -597,7 +633,7 @@ function PersonalTutors() {
           >
             <div className="relative inline-block">
               <div className="h-16 w-16 mx-auto rounded-full grid place-items-center text-white text-xl font-bold" style={{ background: "var(--gradient-vibrant)" }}>
-                {t.name.split(" ").map(n => n[0]).slice(0, 2).join("")}
+                {t.name.split(" ").map((n: string) => n[0]).slice(0, 2).join("")}
               </div>
               {t.online && <span className="absolute bottom-0 right-0 h-4 w-4 rounded-full bg-[var(--brand-green)] border-2 border-white" />}
             </div>
@@ -651,6 +687,9 @@ function Marketplace() {
 
 /* ---------------- Achievements ---------------- */
 function Achievements() {
+  const { data } = useStudentDashboard();
+  const currentAchievements = data?.achievements || [];
+
   return (
     <section className="rounded-3xl p-6 sm:p-8 text-white relative overflow-hidden" style={{ background: "var(--gradient-hero)" }}>
       <motion.div
@@ -670,8 +709,8 @@ function Achievements() {
           </div>
         </div>
 
-        <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
-          {achievements.map((a) => (
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+          {currentAchievements.map((a: any) => (
             <motion.div
               key={a.label}
               whileHover={{ y: -4, rotate: -2 }}

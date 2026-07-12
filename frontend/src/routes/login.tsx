@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { Mail, Lock, Eye, EyeOff, ArrowRight, BookOpen, Users, Award, Loader2, AlertCircle } from "lucide-react";
@@ -23,6 +23,7 @@ function LoginPage() {
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
   const { login, isLoading, error, clearError } = useAuth();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,7 +37,17 @@ function LoginPage() {
 
     try {
       clearError();
-      await login({ email, password } as LoginCredentials);
+      const data = await login({ email, password } as LoginCredentials);
+      
+      if (!data?.user?.isVerified) {
+        navigate({ to: "/verify-email" });
+      } else {
+        const role = data.user.role.toLowerCase();
+        if (role === "admin") navigate({ to: "/admin-dashboard" });
+        else if (role === "tutor") navigate({ to: "/tutor" });
+        else if (role === "school") navigate({ to: "/school-dashboard" });
+        else navigate({ to: "/dashboard" });
+      }
     } catch (err) {
       console.error("Login error:", err);
     }

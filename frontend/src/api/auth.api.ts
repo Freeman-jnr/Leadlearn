@@ -24,6 +24,14 @@ export const registerUser = async (data: RegisterCredentials): Promise<AuthRespo
 };
 
 /**
+ * Verify user OTP
+ */
+export const verifyUser = async (data: { email: string; otp: string }): Promise<AuthResponse> => {
+  const response = await apiClient.post<AuthResponse>(ENDPOINTS.AUTH.VERIFY, data);
+  return response.data;
+};
+
+/**
  * Logout user (notify backend)
  */
 export const logoutUser = async (): Promise<void> => {

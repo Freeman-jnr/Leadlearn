@@ -1,6 +1,7 @@
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 generator client {
@@ -15,127 +16,309 @@ enum Role {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  email         String    @unique
-  firstName     String
-  lastName      String
-  password      String
-  phone         String?
-  avatarUrl     String?
-  role          Role      @default(STUDENT)
-  isVerified    Boolean   @default(false)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id         String   @id @default(cuid())
+  email      String   @unique
+  firstName  String
+  lastName   String
+  password   String
+  phone      String?
+  avatarUrl  String?
+  role       Role     @default(STUDENT)
+  isVerified Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
-  courses       Enrollment[]
-  progress      LessonProgress[]
+  courses             Enrollment[]
+  progress            LessonProgress[]
+  homeworkSubmissions HomeworkSubmission[]
+  sentMessages        Message[]            @relation("SentMessages")
+  receivedMessages    Message[]            @relation("ReceivedMessages")
+  marketplaceItems    MarketplaceItem[]
+  notifications       Notification[]
+  transactions        Transaction[]
+  reviewsGiven        Review[]             @relation("ReviewAuthor")
+  reviewsReceived     Review[]             @relation("ReviewTarget")
+  liveClassMessages   LiveClassMessage[]
 
-  student       StudentProfile?
-  tutor         TutorProfile?
-  school        SchoolProfile?
+  student StudentProfile?
+  tutor   TutorProfile?
+  school  SchoolProfile?
 
   @@map("users")
 }
 
 model StudentProfile {
-  id            String    @id @default(cuid())
-  userId        String    @unique
-  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  classLevel    String?
-  schoolName    String?
-  age           Int?
-  gender        String?
-  avatar        String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id         String   @id @default(cuid())
+  userId     String   @unique
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  classLevel String?
+  schoolName String?
+  age        Int?
+  gender     String?
+  avatar     String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
   @@map("student_profiles")
 }
 
 model TutorProfile {
-  id             String    @id @default(cuid())
-  userId         String    @unique
-  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id             String   @id @default(cuid())
+  userId         String   @unique
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   subjects       String[]
   qualifications String?
   bio            String?
-  experience     Int?      @default(0)
+  experience     Int?     @default(0)
   avatar         String?
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
+  rating         Float    @default(0)
+  totalReviews   Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   @@map("tutor_profiles")
 }
 
 model SchoolProfile {
-  id            String    @id @default(cuid())
-  userId        String    @unique
-  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  schoolName    String
-  address       String?
-  schoolType    String?
-  logo          String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id         String   @id @default(cuid())
+  userId     String   @unique
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  schoolName String
+  address    String?
+  schoolType String?
+  logo       String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
   @@map("school_profiles")
 }
 
 model Course {
-  id            String    @id @default(cuid())
-  title         String
-  description   String
-  thumbnail     String?
-  instructor    String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  thumbnail   String?
+  instructorId String?
+  instructor  String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  lessons       Lesson[]
-  enrollments   Enrollment[]
+  lessons     Lesson[]
+  enrollments Enrollment[]
+  homework    Homework[]
+  liveClasses LiveClass[]
+  assessments Assessment[]
+  reviews     Review[]
 
   @@map("courses")
 }
 
 model Lesson {
-  id            String    @id @default(cuid())
-  courseId      String
-  course        Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  title         String
-  content       String
-  videoUrl      String?
-  order         Int       @default(0)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id          String   @id @default(cuid())
+  courseId    String
+  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  title       String
+  content     String
+  videoUrl    String?
+  thumbnailUrl String?
+  duration    Int?     @default(0) // minutes
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  progress      LessonProgress[]
+  progress LessonProgress[]
 
   @@map("lessons")
 }
 
 model Enrollment {
-  id            String    @id @default(cuid())
-  userId        String
-  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  courseId      String
-  course        Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  enrolledAt    DateTime  @default(now())
-  completedAt   DateTime?
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  courseId    String
+  course      Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  enrolledAt  DateTime  @default(now())
+  completedAt DateTime?
 
   @@unique([userId, courseId])
   @@map("enrollments")
 }
 
 model LessonProgress {
-  id            String    @id @default(cuid())
-  userId        String
-  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  lessonId      String
-  lesson        Lesson    @relation(fields: [lessonId], references: [id], onDelete: Cascade)
-  completedAt   DateTime?
-  progress      Int       @default(0) // 0-100 percentage
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lessonId    String
+  lesson      Lesson    @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  completedAt DateTime?
 
   @@unique([userId, lessonId])
   @@map("lesson_progress")
+}
+
+model Homework {
+  id          String   @id @default(cuid())
+  courseId    String
+  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  title       String
+  description String?
+  fileUrl     String?  // Supabase storage URL for attached file
+  dueDate     DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  submissions HomeworkSubmission[]
+
+  @@map("homework")
+}
+
+model HomeworkSubmission {
+  id          String    @id @default(cuid())
+  homeworkId  String
+  homework    Homework  @relation(fields: [homeworkId], references: [id], onDelete: Cascade)
+  studentId   String
+  student     User      @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  status      String    @default("pending") // pending, completed, overdue, review
+  score       Int?
+  submittedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([homeworkId, studentId])
+  @@map("homework_submissions")
+}
+
+model Assessment {
+  id          String   @id @default(cuid())
+  courseId    String
+  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  title       String
+  description String?
+  questions   Json     @default("[]")
+  dueDate     DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  submissions AssessmentSubmission[]
+
+  @@map("assessments")
+}
+
+model AssessmentSubmission {
+  id           String     @id @default(cuid())
+  assessmentId String
+  assessment   Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  studentId    String
+  score        Int?
+  answers      Json       @default("{}")
+  submittedAt  DateTime   @default(now())
+
+  @@unique([assessmentId, studentId])
+  @@map("assessment_submissions")
+}
+
+model LiveClass {
+  id           String   @id @default(cuid())
+  courseId     String
+  course       Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  title        String
+  scheduledAt  DateTime
+  durationMins Int      @default(60)
+  meetingUrl   String?  // Jitsi room name or external URL
+  isLive       Boolean  @default(false)
+  endedAt      DateTime?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  messages LiveClassMessage[]
+
+  @@map("live_classes")
+}
+
+model LiveClassMessage {
+  id          String    @id @default(cuid())
+  liveClassId String
+  liveClass   LiveClass @relation(fields: [liveClassId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  content     String
+  createdAt   DateTime  @default(now())
+
+  @@map("live_class_messages")
+}
+
+model Message {
+  id         String   @id @default(cuid())
+  senderId   String
+  sender     User     @relation("SentMessages", fields: [senderId], references: [id])
+  receiverId String
+  receiver   User     @relation("ReceivedMessages", fields: [receiverId], references: [id])
+  content    String
+  isRead     Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("messages")
+}
+
+model MarketplaceItem {
+  id          String   @id @default(cuid())
+  tutorId     String
+  tutor       User     @relation(fields: [tutorId], references: [id])
+  title       String
+  type        String   // "PDF", "Video", "Workbook", etc.
+  price       Float
+  emoji       String?
+  fileUrl     String?  // Supabase storage URL
+  description String?
+  sales       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("marketplace_items")
+}
+
+model Transaction {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  amount      Float
+  type        String   // "payout", "sale", "subscription"
+  description String?
+  status      String   @default("completed") // completed, pending, failed
+  reference   String?
+  createdAt   DateTime @default(now())
+
+  @@map("transactions")
+}
+
+model Review {
+  id          String   @id @default(cuid())
+  authorId    String
+  author      User     @relation("ReviewAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+  targetId    String   // The tutor being reviewed
+  target      User     @relation("ReviewTarget", fields: [targetId], references: [id], onDelete: Cascade)
+  courseId    String?
+  course      Course?  @relation(fields: [courseId], references: [id], onDelete: SetNull)
+  rating      Int      // 1-5
+  comment     String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("reviews")
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  message   String
+  type      String   @default("info") // info, success, warning, error
+  isRead    Boolean  @default(false)
+  link      String?  // Optional route to navigate to on click
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("notifications")
 }

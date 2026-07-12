@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { User, Mail, Phone, Lock, Globe, GraduationCap, BookOpen, Building2, ArrowRight, Check, Loader2, AlertCircle } from "lucide-react";
@@ -36,6 +36,7 @@ function RegisterPage() {
   const termsRef = useRef<HTMLInputElement>(null);
 
   const { register, isLoading, error, clearError } = useAuth();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -74,6 +75,8 @@ function RegisterPage() {
         confirmPassword,
         role,
       } as RegisterCredentials);
+      
+      navigate({ to: "/verify-email" });
     } catch (err) {
       console.error("Registration error:", err);
     }

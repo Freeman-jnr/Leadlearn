@@ -34,7 +34,7 @@ export const requireAuth = async (req: AuthenticatedRequest, res: Response, next
     }
 
     // Strip sensitive fields before attaching to request
-    const { password, refreshToken, ...safeUser } = user;
+    const { password, ...safeUser } = user;
     req.user = safeUser;
     next();
   } catch (error) {

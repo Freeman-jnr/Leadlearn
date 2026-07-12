@@ -8,9 +8,10 @@ import {
   ChevronRight, Plus, TrendingUp, TrendingDown, Sparkles, CheckCircle2,
   AlertCircle, MoreVertical, Eye, Filter, Download, UserCheck, Star, Send,
   Globe, Activity, Zap, Mail, MessageCircle, Sun, Moon, ChevronDown,
-  Edit3, Trash2, Image as ImageIcon, Lock, Server, Calendar as CalIcon,
+  Edit3, Trash2, Image as ImageIcon, Lock, Server, Calendar as CalIcon, Loader2
 } from "lucide-react";
 import logo from "@/assets/lead-learnhub-logo.png";
+import { useAdminDashboard } from "@/hooks/useDashboard";
 
 export const Route = createFileRoute("/admin-dashboard")({
   head: () => ({
@@ -140,9 +141,28 @@ function AdminDashboardPage() {
   const [collapsed, setCollapsed] = useState(false);
   const [activeMenu, setActiveMenu] = useState("Overview");
   const [dark, setDark] = useState(false);
+  
+  const { data: dashboardData, isLoading, error } = useAdminDashboard();
+
+  if (isLoading) {
+    return <div className="min-h-screen bg-background flex items-center justify-center"><Loader2 className="h-10 w-10 animate-spin text-primary" /></div>;
+  }
+
+  if (error) {
+    return <div className="min-h-screen bg-background flex items-center justify-center"><p className="text-red-500">Failed to load admin dashboard.</p></div>;
+  }
+
+  const dynamicStats = dashboardData?.stats ? [
+    { label: "Total Users", value: dashboardData.stats.totalUsers.toLocaleString(), change: "Active", up: true, icon: Users, color: "var(--brand-pink)" },
+    { label: "Total Courses", value: dashboardData.stats.totalCourses.toLocaleString(), change: "Active", up: true, icon: BookOpen, color: "var(--brand-blue)" },
+    { label: "Enrollments", value: dashboardData.stats.totalEnrollments.toLocaleString(), change: "Active", up: true, icon: GraduationCap, color: "var(--brand-orange)" },
+    { label: "Active Subscriptions", value: dashboardData.stats.activeSubscriptions.toLocaleString(), change: "Active", up: true, icon: CreditCard, color: "var(--brand-teal)" },
+    { label: "Total Revenue", value: `₦${(dashboardData.stats.totalRevenue).toLocaleString()}`, change: "All Time", up: true, icon: Wallet, color: "var(--brand-yellow)" },
+    ...stats.slice(5) // keep some mock stats for UI completeness
+  ] : stats;
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-background via-background to-muted/30">
+    <div className={`min-h-screen text-foreground transition-colors ${dark ? 'dark bg-[#0a0a0b]' : 'bg-[oklch(0.98_0.01_250)]'}`}>
       {/* Sidebar */}
       <motion.aside
         animate={{ width: collapsed ? 80 : 280 }}
@@ -304,7 +324,7 @@ function AdminDashboardPage() {
               </div>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {stats.map((s, i) => {
+              {dynamicStats.map((s: any, i: number) => {
                 const Icon = s.icon;
                 return (
                   <motion.div

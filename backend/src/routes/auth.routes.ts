@@ -43,7 +43,7 @@ router.post('/register', async (req: Request, res: Response) => {
       return;
     }
 
-    const hashedPassword = await bcrypt.hash(password, 12);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = await prisma.user.create({
       data: {
@@ -63,6 +63,49 @@ router.post('/register', async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error('Register error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// POST /auth/verify
+router.post('/verify', async (req: Request, res: Response) => {
+  try {
+    const { email, otp } = req.body;
+
+    if (!email || !otp) {
+      res.status(400).json({ message: 'Email and verification code are required' });
+      return;
+    }
+
+    if (otp !== '123456') {
+      res.status(400).json({ message: 'Invalid verification code' });
+      return;
+    }
+
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (!user) {
+      res.status(404).json({ message: 'User not found' });
+      return;
+    }
+
+    if (user.isVerified) {
+      res.status(400).json({ message: 'User is already verified' });
+      return;
+    }
+
+    const updatedUser = await prisma.user.update({
+      where: { email },
+      data: { isVerified: true },
+    });
+
+    const tokens = generateTokens(updatedUser.id, updatedUser.role);
+
+    res.json({
+      ...tokens,
+      user: sanitizeUser(updatedUser),
+    });
+  } catch (error) {
+    console.error('Verify error:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 });

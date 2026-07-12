@@ -10,7 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as VerifyEmailRouteImport } from './routes/verify-email'
-import { Route as TutorDashboardRouteImport } from './routes/tutor-dashboard'
+import { Route as TutorRouteImport } from './routes/tutor'
 import { Route as SchoolDashboardRouteImport } from './routes/school-dashboard'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as RegisterRouteImport } from './routes/register'
@@ -20,15 +20,29 @@ import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as AdminDashboardRouteImport } from './routes/admin-dashboard'
 import { Route as AccountSuccessRouteImport } from './routes/account-success'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as TutorIndexRouteImport } from './routes/tutor.index'
+import { Route as TutorStudentsRouteImport } from './routes/tutor.students'
+import { Route as TutorSettingsRouteImport } from './routes/tutor.settings'
+import { Route as TutorReviewsRouteImport } from './routes/tutor.reviews'
+import { Route as TutorRecordedLessonsRouteImport } from './routes/tutor.recorded-lessons'
+import { Route as TutorNotificationsRouteImport } from './routes/tutor.notifications'
+import { Route as TutorMarketplaceRouteImport } from './routes/tutor.marketplace'
+import { Route as TutorLiveSessionsRouteImport } from './routes/tutor.live-sessions'
+import { Route as TutorEarningsRouteImport } from './routes/tutor.earnings'
+import { Route as TutorClassesRouteImport } from './routes/tutor.classes'
+import { Route as TutorCalendarRouteImport } from './routes/tutor.calendar'
+import { Route as TutorAssignmentsRouteImport } from './routes/tutor.assignments'
+import { Route as TutorAssessmentsRouteImport } from './routes/tutor.assessments'
+import { Route as TutorLiveSessionsSessionIdRouteImport } from './routes/tutor.live-sessions.$sessionId'
 
 const VerifyEmailRoute = VerifyEmailRouteImport.update({
   id: '/verify-email',
   path: '/verify-email',
   getParentRoute: () => rootRouteImport,
 } as any)
-const TutorDashboardRoute = TutorDashboardRouteImport.update({
-  id: '/tutor-dashboard',
-  path: '/tutor-dashboard',
+const TutorRoute = TutorRouteImport.update({
+  id: '/tutor',
+  path: '/tutor',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SchoolDashboardRoute = SchoolDashboardRouteImport.update({
@@ -76,6 +90,77 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TutorIndexRoute = TutorIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => TutorRoute,
+} as any)
+const TutorStudentsRoute = TutorStudentsRouteImport.update({
+  id: '/students',
+  path: '/students',
+  getParentRoute: () => TutorRoute,
+} as any)
+const TutorSettingsRoute = TutorSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => TutorRoute,
+} as any)
+const TutorReviewsRoute = TutorReviewsRouteImport.update({
+  id: '/reviews',
+  path: '/reviews',
+  getParentRoute: () => TutorRoute,
+} as any)
+const TutorRecordedLessonsRoute = TutorRecordedLessonsRouteImport.update({
+  id: '/recorded-lessons',
+  path: '/recorded-lessons',
+  getParentRoute: () => TutorRoute,
+} as any)
+const TutorNotificationsRoute = TutorNotificationsRouteImport.update({
+  id: '/notifications',
+  path: '/notifications',
+  getParentRoute: () => TutorRoute,
+} as any)
+const TutorMarketplaceRoute = TutorMarketplaceRouteImport.update({
+  id: '/marketplace',
+  path: '/marketplace',
+  getParentRoute: () => TutorRoute,
+} as any)
+const TutorLiveSessionsRoute = TutorLiveSessionsRouteImport.update({
+  id: '/live-sessions',
+  path: '/live-sessions',
+  getParentRoute: () => TutorRoute,
+} as any)
+const TutorEarningsRoute = TutorEarningsRouteImport.update({
+  id: '/earnings',
+  path: '/earnings',
+  getParentRoute: () => TutorRoute,
+} as any)
+const TutorClassesRoute = TutorClassesRouteImport.update({
+  id: '/classes',
+  path: '/classes',
+  getParentRoute: () => TutorRoute,
+} as any)
+const TutorCalendarRoute = TutorCalendarRouteImport.update({
+  id: '/calendar',
+  path: '/calendar',
+  getParentRoute: () => TutorRoute,
+} as any)
+const TutorAssignmentsRoute = TutorAssignmentsRouteImport.update({
+  id: '/assignments',
+  path: '/assignments',
+  getParentRoute: () => TutorRoute,
+} as any)
+const TutorAssessmentsRoute = TutorAssessmentsRouteImport.update({
+  id: '/assessments',
+  path: '/assessments',
+  getParentRoute: () => TutorRoute,
+} as any)
+const TutorLiveSessionsSessionIdRoute =
+  TutorLiveSessionsSessionIdRouteImport.update({
+    id: '/$sessionId',
+    path: '/$sessionId',
+    getParentRoute: () => TutorLiveSessionsRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -87,8 +172,22 @@ export interface FileRoutesByFullPath {
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
   '/school-dashboard': typeof SchoolDashboardRoute
-  '/tutor-dashboard': typeof TutorDashboardRoute
+  '/tutor': typeof TutorRouteWithChildren
   '/verify-email': typeof VerifyEmailRoute
+  '/tutor/assessments': typeof TutorAssessmentsRoute
+  '/tutor/assignments': typeof TutorAssignmentsRoute
+  '/tutor/calendar': typeof TutorCalendarRoute
+  '/tutor/classes': typeof TutorClassesRoute
+  '/tutor/earnings': typeof TutorEarningsRoute
+  '/tutor/live-sessions': typeof TutorLiveSessionsRouteWithChildren
+  '/tutor/marketplace': typeof TutorMarketplaceRoute
+  '/tutor/notifications': typeof TutorNotificationsRoute
+  '/tutor/recorded-lessons': typeof TutorRecordedLessonsRoute
+  '/tutor/reviews': typeof TutorReviewsRoute
+  '/tutor/settings': typeof TutorSettingsRoute
+  '/tutor/students': typeof TutorStudentsRoute
+  '/tutor/': typeof TutorIndexRoute
+  '/tutor/live-sessions/$sessionId': typeof TutorLiveSessionsSessionIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -100,8 +199,21 @@ export interface FileRoutesByTo {
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
   '/school-dashboard': typeof SchoolDashboardRoute
-  '/tutor-dashboard': typeof TutorDashboardRoute
   '/verify-email': typeof VerifyEmailRoute
+  '/tutor/assessments': typeof TutorAssessmentsRoute
+  '/tutor/assignments': typeof TutorAssignmentsRoute
+  '/tutor/calendar': typeof TutorCalendarRoute
+  '/tutor/classes': typeof TutorClassesRoute
+  '/tutor/earnings': typeof TutorEarningsRoute
+  '/tutor/live-sessions': typeof TutorLiveSessionsRouteWithChildren
+  '/tutor/marketplace': typeof TutorMarketplaceRoute
+  '/tutor/notifications': typeof TutorNotificationsRoute
+  '/tutor/recorded-lessons': typeof TutorRecordedLessonsRoute
+  '/tutor/reviews': typeof TutorReviewsRoute
+  '/tutor/settings': typeof TutorSettingsRoute
+  '/tutor/students': typeof TutorStudentsRoute
+  '/tutor': typeof TutorIndexRoute
+  '/tutor/live-sessions/$sessionId': typeof TutorLiveSessionsSessionIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -114,8 +226,22 @@ export interface FileRoutesById {
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
   '/school-dashboard': typeof SchoolDashboardRoute
-  '/tutor-dashboard': typeof TutorDashboardRoute
+  '/tutor': typeof TutorRouteWithChildren
   '/verify-email': typeof VerifyEmailRoute
+  '/tutor/assessments': typeof TutorAssessmentsRoute
+  '/tutor/assignments': typeof TutorAssignmentsRoute
+  '/tutor/calendar': typeof TutorCalendarRoute
+  '/tutor/classes': typeof TutorClassesRoute
+  '/tutor/earnings': typeof TutorEarningsRoute
+  '/tutor/live-sessions': typeof TutorLiveSessionsRouteWithChildren
+  '/tutor/marketplace': typeof TutorMarketplaceRoute
+  '/tutor/notifications': typeof TutorNotificationsRoute
+  '/tutor/recorded-lessons': typeof TutorRecordedLessonsRoute
+  '/tutor/reviews': typeof TutorReviewsRoute
+  '/tutor/settings': typeof TutorSettingsRoute
+  '/tutor/students': typeof TutorStudentsRoute
+  '/tutor/': typeof TutorIndexRoute
+  '/tutor/live-sessions/$sessionId': typeof TutorLiveSessionsSessionIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -129,8 +255,22 @@ export interface FileRouteTypes {
     | '/register'
     | '/reset-password'
     | '/school-dashboard'
-    | '/tutor-dashboard'
+    | '/tutor'
     | '/verify-email'
+    | '/tutor/assessments'
+    | '/tutor/assignments'
+    | '/tutor/calendar'
+    | '/tutor/classes'
+    | '/tutor/earnings'
+    | '/tutor/live-sessions'
+    | '/tutor/marketplace'
+    | '/tutor/notifications'
+    | '/tutor/recorded-lessons'
+    | '/tutor/reviews'
+    | '/tutor/settings'
+    | '/tutor/students'
+    | '/tutor/'
+    | '/tutor/live-sessions/$sessionId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -142,8 +282,21 @@ export interface FileRouteTypes {
     | '/register'
     | '/reset-password'
     | '/school-dashboard'
-    | '/tutor-dashboard'
     | '/verify-email'
+    | '/tutor/assessments'
+    | '/tutor/assignments'
+    | '/tutor/calendar'
+    | '/tutor/classes'
+    | '/tutor/earnings'
+    | '/tutor/live-sessions'
+    | '/tutor/marketplace'
+    | '/tutor/notifications'
+    | '/tutor/recorded-lessons'
+    | '/tutor/reviews'
+    | '/tutor/settings'
+    | '/tutor/students'
+    | '/tutor'
+    | '/tutor/live-sessions/$sessionId'
   id:
     | '__root__'
     | '/'
@@ -155,8 +308,22 @@ export interface FileRouteTypes {
     | '/register'
     | '/reset-password'
     | '/school-dashboard'
-    | '/tutor-dashboard'
+    | '/tutor'
     | '/verify-email'
+    | '/tutor/assessments'
+    | '/tutor/assignments'
+    | '/tutor/calendar'
+    | '/tutor/classes'
+    | '/tutor/earnings'
+    | '/tutor/live-sessions'
+    | '/tutor/marketplace'
+    | '/tutor/notifications'
+    | '/tutor/recorded-lessons'
+    | '/tutor/reviews'
+    | '/tutor/settings'
+    | '/tutor/students'
+    | '/tutor/'
+    | '/tutor/live-sessions/$sessionId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -169,7 +336,7 @@ export interface RootRouteChildren {
   RegisterRoute: typeof RegisterRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SchoolDashboardRoute: typeof SchoolDashboardRoute
-  TutorDashboardRoute: typeof TutorDashboardRoute
+  TutorRoute: typeof TutorRouteWithChildren
   VerifyEmailRoute: typeof VerifyEmailRoute
 }
 
@@ -182,11 +349,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VerifyEmailRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/tutor-dashboard': {
-      id: '/tutor-dashboard'
-      path: '/tutor-dashboard'
-      fullPath: '/tutor-dashboard'
-      preLoaderRoute: typeof TutorDashboardRouteImport
+    '/tutor': {
+      id: '/tutor'
+      path: '/tutor'
+      fullPath: '/tutor'
+      preLoaderRoute: typeof TutorRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/school-dashboard': {
@@ -252,8 +419,151 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/tutor/': {
+      id: '/tutor/'
+      path: '/'
+      fullPath: '/tutor/'
+      preLoaderRoute: typeof TutorIndexRouteImport
+      parentRoute: typeof TutorRoute
+    }
+    '/tutor/students': {
+      id: '/tutor/students'
+      path: '/students'
+      fullPath: '/tutor/students'
+      preLoaderRoute: typeof TutorStudentsRouteImport
+      parentRoute: typeof TutorRoute
+    }
+    '/tutor/settings': {
+      id: '/tutor/settings'
+      path: '/settings'
+      fullPath: '/tutor/settings'
+      preLoaderRoute: typeof TutorSettingsRouteImport
+      parentRoute: typeof TutorRoute
+    }
+    '/tutor/reviews': {
+      id: '/tutor/reviews'
+      path: '/reviews'
+      fullPath: '/tutor/reviews'
+      preLoaderRoute: typeof TutorReviewsRouteImport
+      parentRoute: typeof TutorRoute
+    }
+    '/tutor/recorded-lessons': {
+      id: '/tutor/recorded-lessons'
+      path: '/recorded-lessons'
+      fullPath: '/tutor/recorded-lessons'
+      preLoaderRoute: typeof TutorRecordedLessonsRouteImport
+      parentRoute: typeof TutorRoute
+    }
+    '/tutor/notifications': {
+      id: '/tutor/notifications'
+      path: '/notifications'
+      fullPath: '/tutor/notifications'
+      preLoaderRoute: typeof TutorNotificationsRouteImport
+      parentRoute: typeof TutorRoute
+    }
+    '/tutor/marketplace': {
+      id: '/tutor/marketplace'
+      path: '/marketplace'
+      fullPath: '/tutor/marketplace'
+      preLoaderRoute: typeof TutorMarketplaceRouteImport
+      parentRoute: typeof TutorRoute
+    }
+    '/tutor/live-sessions': {
+      id: '/tutor/live-sessions'
+      path: '/live-sessions'
+      fullPath: '/tutor/live-sessions'
+      preLoaderRoute: typeof TutorLiveSessionsRouteImport
+      parentRoute: typeof TutorRoute
+    }
+    '/tutor/earnings': {
+      id: '/tutor/earnings'
+      path: '/earnings'
+      fullPath: '/tutor/earnings'
+      preLoaderRoute: typeof TutorEarningsRouteImport
+      parentRoute: typeof TutorRoute
+    }
+    '/tutor/classes': {
+      id: '/tutor/classes'
+      path: '/classes'
+      fullPath: '/tutor/classes'
+      preLoaderRoute: typeof TutorClassesRouteImport
+      parentRoute: typeof TutorRoute
+    }
+    '/tutor/calendar': {
+      id: '/tutor/calendar'
+      path: '/calendar'
+      fullPath: '/tutor/calendar'
+      preLoaderRoute: typeof TutorCalendarRouteImport
+      parentRoute: typeof TutorRoute
+    }
+    '/tutor/assignments': {
+      id: '/tutor/assignments'
+      path: '/assignments'
+      fullPath: '/tutor/assignments'
+      preLoaderRoute: typeof TutorAssignmentsRouteImport
+      parentRoute: typeof TutorRoute
+    }
+    '/tutor/assessments': {
+      id: '/tutor/assessments'
+      path: '/assessments'
+      fullPath: '/tutor/assessments'
+      preLoaderRoute: typeof TutorAssessmentsRouteImport
+      parentRoute: typeof TutorRoute
+    }
+    '/tutor/live-sessions/$sessionId': {
+      id: '/tutor/live-sessions/$sessionId'
+      path: '/$sessionId'
+      fullPath: '/tutor/live-sessions/$sessionId'
+      preLoaderRoute: typeof TutorLiveSessionsSessionIdRouteImport
+      parentRoute: typeof TutorLiveSessionsRoute
+    }
   }
 }
+
+interface TutorLiveSessionsRouteChildren {
+  TutorLiveSessionsSessionIdRoute: typeof TutorLiveSessionsSessionIdRoute
+}
+
+const TutorLiveSessionsRouteChildren: TutorLiveSessionsRouteChildren = {
+  TutorLiveSessionsSessionIdRoute: TutorLiveSessionsSessionIdRoute,
+}
+
+const TutorLiveSessionsRouteWithChildren =
+  TutorLiveSessionsRoute._addFileChildren(TutorLiveSessionsRouteChildren)
+
+interface TutorRouteChildren {
+  TutorAssessmentsRoute: typeof TutorAssessmentsRoute
+  TutorAssignmentsRoute: typeof TutorAssignmentsRoute
+  TutorCalendarRoute: typeof TutorCalendarRoute
+  TutorClassesRoute: typeof TutorClassesRoute
+  TutorEarningsRoute: typeof TutorEarningsRoute
+  TutorLiveSessionsRoute: typeof TutorLiveSessionsRouteWithChildren
+  TutorMarketplaceRoute: typeof TutorMarketplaceRoute
+  TutorNotificationsRoute: typeof TutorNotificationsRoute
+  TutorRecordedLessonsRoute: typeof TutorRecordedLessonsRoute
+  TutorReviewsRoute: typeof TutorReviewsRoute
+  TutorSettingsRoute: typeof TutorSettingsRoute
+  TutorStudentsRoute: typeof TutorStudentsRoute
+  TutorIndexRoute: typeof TutorIndexRoute
+}
+
+const TutorRouteChildren: TutorRouteChildren = {
+  TutorAssessmentsRoute: TutorAssessmentsRoute,
+  TutorAssignmentsRoute: TutorAssignmentsRoute,
+  TutorCalendarRoute: TutorCalendarRoute,
+  TutorClassesRoute: TutorClassesRoute,
+  TutorEarningsRoute: TutorEarningsRoute,
+  TutorLiveSessionsRoute: TutorLiveSessionsRouteWithChildren,
+  TutorMarketplaceRoute: TutorMarketplaceRoute,
+  TutorNotificationsRoute: TutorNotificationsRoute,
+  TutorRecordedLessonsRoute: TutorRecordedLessonsRoute,
+  TutorReviewsRoute: TutorReviewsRoute,
+  TutorSettingsRoute: TutorSettingsRoute,
+  TutorStudentsRoute: TutorStudentsRoute,
+  TutorIndexRoute: TutorIndexRoute,
+}
+
+const TutorRouteWithChildren = TutorRoute._addFileChildren(TutorRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
@@ -265,7 +575,7 @@ const rootRouteChildren: RootRouteChildren = {
   RegisterRoute: RegisterRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SchoolDashboardRoute: SchoolDashboardRoute,
-  TutorDashboardRoute: TutorDashboardRoute,
+  TutorRoute: TutorRouteWithChildren,
   VerifyEmailRoute: VerifyEmailRoute,
 }
 export const routeTree = rootRouteImport

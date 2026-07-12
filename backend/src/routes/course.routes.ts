@@ -166,4 +166,59 @@ router.delete('/:courseId', requireAuth, requireRole(['ADMIN']), async (req: Aut
   }
 });
 
+// GET /api/courses/:courseId/lessons
+// Require auth
+router.get('/:courseId/lessons', requireAuth, async (req: Request, res: Response) => {
+  try {
+    const courseId = String(req.params.courseId);
+    const lessons = await prisma.lesson.findMany({
+      where: { courseId },
+      orderBy: { order: 'asc' },
+    });
+    res.json(lessons);
+  } catch (error) {
+    console.error('Get lessons error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// POST /api/courses/:courseId/lessons
+// Requires auth + ADMIN or TUTOR role
+router.post('/:courseId/lessons', requireAuth, requireRole(['ADMIN', 'TUTOR']), async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const courseId = String(req.params.courseId);
+    const { title, content, videoUrl, thumbnailUrl, duration } = req.body;
+
+    if (!title) {
+      res.status(400).json({ message: 'title is required' });
+      return;
+    }
+
+    const course = await prisma.course.findUnique({ where: { id: courseId } });
+    if (!course) {
+      res.status(404).json({ message: 'Course not found' });
+      return;
+    }
+
+    const lessonsCount = await prisma.lesson.count({ where: { courseId } });
+
+    const lesson = await prisma.lesson.create({
+      data: {
+        courseId,
+        title,
+        content: content || '',
+        videoUrl: videoUrl || null,
+        thumbnailUrl: thumbnailUrl || null,
+        duration: duration ? parseInt(String(duration)) : 0,
+        order: lessonsCount + 1,
+      },
+    });
+
+    res.status(201).json(lesson);
+  } catch (error) {
+    console.error('Create lesson error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 export default router;

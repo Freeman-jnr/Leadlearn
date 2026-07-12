@@ -59,6 +59,10 @@ export const useProfile = () => {
       setState((prev) => ({ ...prev, isLoading: true, error: null }));
       const updated = await updateTutorProfile(data);
       setState((prev) => ({ ...prev, profile: updated, isLoading: false }));
+      const { user, setUser } = useAuthStore.getState();
+      if (user) {
+        setUser({ ...user, firstName: updated.firstName, lastName: updated.lastName });
+      }
       return updated;
     } catch (error: any) {
       const errorMessage = error.response?.data?.message || "Failed to update tutor profile";
@@ -88,6 +92,10 @@ export const useProfile = () => {
       if (state.profile) {
         const updated = { ...state.profile, avatarUrl: result.avatarUrl };
         setState((prev) => ({ ...prev, profile: updated, isLoading: false }));
+      }
+      const { user, setUser } = useAuthStore.getState();
+      if (user) {
+        setUser({ ...user, avatarUrl: result.avatarUrl });
       }
       return result;
     } catch (error: any) {
